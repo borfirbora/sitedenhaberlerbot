@@ -90,7 +90,7 @@ bot.onText(/\/site ekle (.+)/, (msg, match) => {
 // -------
 const web = http.createServer((req, res) => {
   res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" })
-  res.end("Bot başarıyla çalışıyor...")
+  res.end("Botumuz başarıyla çalışıyor...")
 })
 
 web.listen(process.env.PORT||3000, () => {
