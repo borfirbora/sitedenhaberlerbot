@@ -1,0 +1,28 @@
+{
+  "name": "sitedenhaberlerbot",
+  "version": "0.0.1",
+  "description": "Telegram için basit RSS bülteni botu",
+  "main": "bot.js",
+  "scripts": {
+    "start": "nodemon bot.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "telegram",
+    "bot",
+    "rss",
+    "feed",
+    "rss",
+    "okuyucu"
+  ],
+  "author": "bora fırlangeç <borafirlangec@gmail.com>",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^10.0.0",
+    "node-telegram-bot-api": "^0.56.0",
+    "rss-feed-emitter": "^3.2.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.15"
+  }
+}
