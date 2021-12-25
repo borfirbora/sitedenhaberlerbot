@@ -4,7 +4,7 @@
   "description": "Telegram için basit RSS bülteni botu",
   "main": "bot.js",
   "scripts": {
-    "start": "nodemon bot.js",
+    "start": "node bot.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
