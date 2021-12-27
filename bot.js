@@ -3,9 +3,9 @@ const { match } = require("assert");
 const http = require("http")
 const tBot = require("node-telegram-bot-api");
 const rssEmitter = require("rss-feed-emitter");
-const bot = new tBot(process.env.BOTAPI, { polling: true });
-const siteFeed = new rssEmitter({ skipFirstLoad: true })
-const youtubeFeed = new rssEmitter({ skipFirstLoad: true })
+const bot = new tBot(process.env.BOTAPI, { polling: true })
+const siteFeed = new rssEmitter({ skipFirstLoad: true }).setMaxListeners(0)
+const youtubeFeed = new rssEmitter({ skipFirstLoad: true }).setMaxListeners(0);
 
 bot.onText(/\/start/, (msg, match) => {
   bot.deleteMessage(msg.chat.id, msg.message_id)
