@@ -4,6 +4,8 @@ const http = require("http")
 const tBot = require("node-telegram-bot-api");
 const rssEmitter = require("rss-feed-emitter");
 const bot = new tBot(process.env.BOTAPI, { polling: true });
+const siteFeed = new rssEmitter({ skipFirstLoad: true })
+const youtubeFeed = new rssEmitter({ skipFirstLoad: true })
 
 bot.onText(/\/start/, (msg, match) => {
   bot.deleteMessage(msg.chat.id, msg.message_id)
@@ -26,7 +28,6 @@ bot.onText(/\/youtube ekle (.+)/, (msg, match) => {
         // Komutu gönderen yönetici ya da kanal sahibi ise?
         bot.sendMessage(msg.chat.id, msg.from.first_name + "! Adresine bi bakçam. Sıkıntı olmazsa eklicem ama hata varsa söylerim. Unutma, hata göstermezsem, eklenmiş bil...")
         // RSS Emitter tanımla
-        const youtubeFeed = new rssEmitter({ skipFirstLoad: false })
         // Gönderilen RSS Feed'ini tanımla ve 2000 ms süreyle takip etmesini sağla
         youtubeFeed.add({
           url: match[1],
@@ -61,12 +62,10 @@ bot.onText(/\/site ekle (.+)/, (msg, match) => {
       } else {
         // Komutu gönderen yönetici ya da kanal sahibi ise?
         bot.sendMessage(msg.chat.id, msg.from.first_name + "! Adresine bi bakçam. Sıkıntı olmazsa eklicem ama hata varsa söylerim. Unutma, hata göstermezsem, eklenmiş bil...")
-        // RSS Emitter tanımla
-        const siteFeed = new rssEmitter({ skipFirstLoad: false })
         // Gönderilen RSS Feed'ini tanımla ve 2000 ms süreyle takip etmesini sağla
         siteFeed.add({
           url: match[1],
-          refresh: 60000
+          refresh: 2000
         }) // tanımlama tamamlandı
         // Feed'te hata varsa?
         siteFeed.on("error", () => {
@@ -77,8 +76,8 @@ bot.onText(/\/site ekle (.+)/, (msg, match) => {
         // new-item başlangıcı
         siteFeed.on("new-item", (item) => {
           let description = item["rss:description"]["#"].replace(/<[^>]+>/gm, '').split(".")
-          description.length= 3;
-          bot.sendMessage(msg.chat.id, '<b>'+item.meta.title+'</b> Bildiriyor!\n\n'+description+'..\n\nDevamını okumak için <a href="'+item.link+'">'+item.title+'</a> bağlantısına dokunabilirsiniz!', { parse_mode: "HTML" })
+          description.length = 3;
+          bot.sendMessage(msg.chat.id, '<b>' + item.meta.title + '</b> Bildiriyor!\n\n' + description + '..\n\nDevamını okumak için <a href="' + item.link + '">' + item.title + '</a> bağlantısına dokunabilirsiniz!', { parse_mode: "HTML" })
         })  // new-item sonu
       } // if sonu
     }) // Then sonu
@@ -87,12 +86,56 @@ bot.onText(/\/site ekle (.+)/, (msg, match) => {
   bot.deleteMessage(msg.chat.id, msg.message_id)
 }) // function sonu
 
-// -------
+bot.onText(/\/site kaldır (.+)/, (msg, match) => {
+  // yetki kontrolü yapılıyor
+  bot.getChatMember(msg.chat.id, msg.from.id)
+    .then((member) => {
+      if (member.status === "member") {
+        // komutu gönderen yönetici ya da kanal sahibi değilse?
+        bot.sendMessage(msg.chat.id, msg.from.first_name + ", yönetici değilsen, grupta herhangi bir yetkin yoksa bu işlere karışma. Bırak, yöneticiler işini yapsın.")
+      } else {
+        // Komutu gönderen yönetici ya da kanal sahibi ise?
+        bot.sendMessage(msg.chat.id, msg.from.first_name + "! Adresine bi bakçam. Sıkıntı olmazsa kaldırcam ama hata varsa söylerim. Unutma, hata göstermezsem, kaldırılmış bil...")
+        siteFeed.on("error", () => {
+          console.error()
+          bot.sendMessage(msg.chat.id, msg.from.first_name + "! sen bence şu URL'yi bi incele. Sanki bu Site Feed URL'si değil gibi geldi bana.")
+        }) // hata sonu
+        siteFeed.remove(match[1])
+      } // if sonu
+    }) // Then sonu
+
+  // bütün işlemlerden sonra gönderilen komut mesajı siliniyor
+  bot.deleteMessage(msg.chat.id, msg.message_id)
+}) // function sonu
+
+bot.onText(/\/youtube kaldır (.+)/, (msg, match) => {
+  // yetki kontrolü yapılıyor
+  bot.getChatMember(msg.chat.id, msg.from.id)
+    .then((member) => {
+      if (member.status === "member") {
+        // komutu gönderen yönetici ya da kanal sahibi değilse?
+        bot.sendMessage(msg.chat.id, msg.from.first_name + ", yönetici değilsen, grupta herhangi bir yetkin yoksa bu işlere karışma. Bırak, yöneticiler işini yapsın.")
+      } else {
+        // Komutu gönderen yönetici ya da kanal sahibi ise?
+        bot.sendMessage(msg.chat.id, msg.from.first_name + "! Adresine bi bakçam. Sıkıntı olmazsa kaldırcam ama hata varsa söylerim. Unutma, hata göstermezsem, kaldırılmış bil...")
+        youtubeFeed.on("error", () => {
+          console.error()
+          bot.sendMessage(msg.chat.id, msg.from.first_name + "! sen bence şu URL'yi bi incele. Sanki bu Site Feed URL'si değil gibi geldi bana.")
+        }) // hata sonu
+        youtubeFeed.remove(match[1])
+      } // if sonu
+    }) // Then sonu
+
+  // bütün işlemlerden sonra gönderilen komut mesajı siliniyor
+  bot.deleteMessage(msg.chat.id, msg.message_id)
+}) // function sonu
+
+// -------  
 const web = http.createServer((req, res) => {
   res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" })
   res.end("Bot başarıyla çalışıyor...")
 })
 
-web.listen(process.env.PORT||3000, () => {
+web.listen(process.env.PORT || 3000, () => {
   console.log("Sunucu çalışıyor...")
 })
