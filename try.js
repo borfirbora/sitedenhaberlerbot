@@ -1,10 +1,11 @@
+const rssEmitter = require("rss-feed-emitter")
 require("dotenv").config();
 const http = require("http")
 const tBot = require("node-telegram-bot-api");
-const rssEmitter = require("rss-feed-emitter");
+const feedsub = require("feedsub")
 const bot = new tBot(process.env.BOTAPI, { polling: true })
-const siteFeed = new rssEmitter({ skipFirstLoad: true, userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36" }).setMaxListeners(0)
-const youtubeFeed = new rssEmitter({ skipFirstLoad: true, userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36" }).setMaxListeners(0);
+  const siteFeed = new rssEmitter({ skipFirstLoad: true }).setMaxListeners(0)
+    const youtubeFeed = new rssEmitter({ skipFirstLoad: true }).setMaxListeners(0);
 
 bot.onText(/\/start/, (msg, match) => {
   bot.deleteMessage(msg.chat.id, msg.message_id)
@@ -26,26 +27,16 @@ bot.onText(/\/youtube ekle (.+)/, (msg, match) => {
       } else {
         // Komutu gönderen yönetici ya da kanal sahibi ise?
         bot.sendMessage(msg.from.id, msg.from.first_name + "! Adresine bi bakçam. Sıkıntı olmazsa eklicem ama hata varsa söylerim. Unutma, hata göstermezsem, eklenmiş bil...")
-        const ytEvent = msg.message_id
-        // Gönderilen RSS Feed'ini tanımla ve 2000 ms süreyle takip etmesini sağla
-        youtubeFeed.add({
-          url: match[1],
-          refresh: 60000,
-          eventName: "yt" + ytEvent + "yt"
-        }) // tanımlama tamamlandı
-        // Feed'te hata varsa?
-        youtubeFeed.on("error", () => {
-          console.error()
-          bot.sendMessage(msg.from.id, msg.from.first_name + "! sen bence şu URL'yi bi incele. Sanki bu Youtube Feed URL'si değil gibi geldi bana: " + match[1])
-          youtubeFeed.remove(match[1])
-        }) // hata sonu
-        // new-item başlangıcı
-        youtubeFeed.on("yt" + ytEvent + "yt", (item) => {
-          let description = item["media:group"]["media:description"]["#"].split(".")
-          description.length = 3;
-          bot.sendMessage(msg.chat.id, '<b>' + item.author + '</b> kanalında yeni bir video var!\n\n<u>' + description.join(".") + '</u>\n\nİzlemek için <a href="' + item.link + '">' + item["media:group"]["media:title"]["#"] + '</a> bağlantısına dokunun!', { parse_mode: "HTML" })
-        })  // new-item sonu
-      } // if sonu
+feedYT =new feedsub(match[1],{
+  interval: 1,
+  autoStart: true,
+  emitOnStart: true
+})
+feedYT.on("item",(item)=>{
+  bot.sendMessage(msg.chat.id,item.title+": "+item.author.name)
+})      
+
+} // if sonu
     }) // Then sonu
 
   // bütün işlemlerden sonra gönderilen komut mesajı siliniyor

@@ -19,6 +19,7 @@
   "license": "ISC",
   "dependencies": {
     "dotenv": "^10.0.0",
+    "feedsub": "^0.7.7",
     "node-telegram-bot-api": "^0.56.0",
     "rss-feed-emitter": "^3.2.2"
   },
