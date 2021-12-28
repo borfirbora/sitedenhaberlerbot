@@ -1,5 +1,4 @@
 require("dotenv").config();
-const { match } = require("assert");
 const http = require("http")
 const tBot = require("node-telegram-bot-api");
 const rssEmitter = require("rss-feed-emitter");
@@ -26,21 +25,22 @@ bot.onText(/\/youtube ekle (.+)/, (msg, match) => {
         bot.sendMessage(msg.chat.id, msg.from.first_name + ", yönetici değilsen, grupta herhangi bir yetkin yoksa bu işlere karışma. Bırak, yöneticiler işini yapsın.")
       } else {
         // Komutu gönderen yönetici ya da kanal sahibi ise?
-        bot.sendMessage(msg.chat.id, msg.from.first_name + "! Adresine bi bakçam. Sıkıntı olmazsa eklicem ama hata varsa söylerim. Unutma, hata göstermezsem, eklenmiş bil...")
-        // RSS Emitter tanımla
+        bot.sendMessage(msg.from.id, msg.from.first_name + "! Adresine bi bakçam. Sıkıntı olmazsa eklicem ama hata varsa söylerim. Unutma, hata göstermezsem, eklenmiş bil...")
+const ytEvent = msg.message_id
         // Gönderilen RSS Feed'ini tanımla ve 2000 ms süreyle takip etmesini sağla
         youtubeFeed.add({
           url: match[1],
-          refresh: 60000
+          refresh: 60000,
+          eventName: "yt"+ytEvent+"yt"
         }) // tanımlama tamamlandı
         // Feed'te hata varsa?
         youtubeFeed.on("error", () => {
           console.error()
-          bot.sendMessage(msg.chat.id, msg.from.first_name + "! sen bence şu URL'yi bi incele. Sanki bu Youtube Feed URL'si değil gibi geldi bana.")
+          bot.sendMessage(msg.from.id, msg.from.first_name + "! sen bence şu URL'yi bi incele. Sanki bu Youtube Feed URL'si değil gibi geldi bana: "+match[1])
           youtubeFeed.remove(match[1])
         }) // hata sonu
         // new-item başlangıcı
-        youtubeFeed.on("new-item", (item) => {
+        youtubeFeed.on("yt"+ytEvent+"yt", (item) => {
           let description = item["media:group"]["media:description"]["#"].split(".")
           description.length = 3;
           bot.sendMessage(msg.chat.id, '<b>' + item.author + '</b> kanalında yeni bir video var!\n\n<u>' + description.join(".") + '</u>\n\nİzlemek için <a href="' + item.link + '">' + item["media:group"]["media:title"]["#"] + '</a> bağlantısına dokunun!', { parse_mode: "HTML" })
@@ -58,23 +58,25 @@ bot.onText(/\/site ekle (.+)/, (msg, match) => {
     .then((member) => {
       if (member.status === "member") {
         // komutu gönderen yönetici ya da kanal sahibi değilse?
-        bot.sendMessage(msg.chat.id, msg.from.first_name + ", yönetici değilsen, grupta herhangi bir yetkin yoksa bu işlere karışma. Bırak, yöneticiler işini yapsın.")
+        bot.sendMessage(msg.from.id, msg.from.first_name + ", yönetici değilsen, grupta herhangi bir yetkin yoksa bu işlere karışma. Bırak, yöneticiler işini yapsın.")
       } else {
         // Komutu gönderen yönetici ya da kanal sahibi ise?
-        bot.sendMessage(msg.chat.id, msg.from.first_name + "! Adresine bi bakçam. Sıkıntı olmazsa eklicem ama hata varsa söylerim. Unutma, hata göstermezsem, eklenmiş bil...")
+        bot.sendMessage(msg.from.id, msg.from.first_name + "! Adresine bi bakçam. Sıkıntı olmazsa eklicem ama hata varsa söylerim. Unutma, hata göstermezsem, eklenmiş bil...")
+const stEvent= msg.message_id
         // Gönderilen RSS Feed'ini tanımla ve 2000 ms süreyle takip etmesini sağla
         siteFeed.add({
           url: match[1],
-          refresh: 2000
+          refresh: 60000,
+          eventName: "st"+stEvent+"st"
         }) // tanımlama tamamlandı
         // Feed'te hata varsa?
         siteFeed.on("error", () => {
           console.error()
-          bot.sendMessage(msg.chat.id, msg.from.first_name + "! sen bence şu URL'yi bi incele. Sanki bu Site Feed URL'si değil gibi geldi bana.")
+          bot.sendMessage(msg.from.id, msg.from.first_name + "! sen bence şu URL'yi bi incele. Sanki bu Site Feed URL'si değil gibi geldi bana: "+match[1])
           siteFeed.remove(match[1])
         }) // hata sonu
         // new-item başlangıcı
-        siteFeed.on("new-item", (item) => {
+        siteFeed.on("st"+stEvent+"st", (item) => {
           let description = item["rss:description"]["#"].replace(/<[^>]+>/gm, '').split(".")
           description.length = 3;
           bot.sendMessage(msg.chat.id, '<b>' + item.meta.title + '</b> Bildiriyor!\n\n' + description + '..\n\nDevamını okumak için <a href="' + item.link + '">' + item.title + '</a> bağlantısına dokunabilirsiniz!', { parse_mode: "HTML" })
@@ -95,10 +97,10 @@ bot.onText(/\/site kaldır (.+)/, (msg, match) => {
         bot.sendMessage(msg.chat.id, msg.from.first_name + ", yönetici değilsen, grupta herhangi bir yetkin yoksa bu işlere karışma. Bırak, yöneticiler işini yapsın.")
       } else {
         // Komutu gönderen yönetici ya da kanal sahibi ise?
-        bot.sendMessage(msg.chat.id, msg.from.first_name + "! Adresine bi bakçam. Sıkıntı olmazsa kaldırcam ama hata varsa söylerim. Unutma, hata göstermezsem, kaldırılmış bil...")
+        bot.sendMessage(msg.from.id, msg.from.first_name + "! Adresine bi bakçam. Sıkıntı olmazsa kaldırcam ama hata varsa söylerim. Unutma, hata göstermezsem, kaldırılmış bil...")
         siteFeed.on("error", () => {
           console.error()
-          bot.sendMessage(msg.chat.id, msg.from.first_name + "! sen bence şu URL'yi bi incele. Sanki bu Site Feed URL'si değil gibi geldi bana.")
+          bot.sendMessage(msg.from.id, msg.from.first_name + "! sen bence şu URL'yi bi incele. Sanki bu Site Feed URL'si değil gibi geldi bana.")
         }) // hata sonu
         siteFeed.remove(match[1])
       } // if sonu
@@ -117,10 +119,10 @@ bot.onText(/\/youtube kaldır (.+)/, (msg, match) => {
         bot.sendMessage(msg.chat.id, msg.from.first_name + ", yönetici değilsen, grupta herhangi bir yetkin yoksa bu işlere karışma. Bırak, yöneticiler işini yapsın.")
       } else {
         // Komutu gönderen yönetici ya da kanal sahibi ise?
-        bot.sendMessage(msg.chat.id, msg.from.first_name + "! Adresine bi bakçam. Sıkıntı olmazsa kaldırcam ama hata varsa söylerim. Unutma, hata göstermezsem, kaldırılmış bil...")
+        bot.sendMessage(msg.from.id, msg.from.first_name + "! Adresine bi bakçam. Sıkıntı olmazsa kaldırcam ama hata varsa söylerim. Unutma, hata göstermezsem, kaldırılmış bil...")
         youtubeFeed.on("error", () => {
           console.error()
-          bot.sendMessage(msg.chat.id, msg.from.first_name + "! sen bence şu URL'yi bi incele. Sanki bu Site Feed URL'si değil gibi geldi bana.")
+          bot.sendMessage(msg.from.id, msg.from.first_name + "! sen bence şu URL'yi bi incele. Sanki bu Site Feed URL'si değil gibi geldi bana.")
         }) // hata sonu
         youtubeFeed.remove(match[1])
       } // if sonu
