@@ -37,7 +37,7 @@ bot.onText(/\/youtube ekle (.+)/, (msg, match) => {
         youtubeFeed.on("error", () => {
           console.error()
           bot.sendMessage(msg.from.id, msg.from.first_name + "! sen bence şu URL'yi bi incele. Sanki bu Youtube Feed URL'si değil gibi geldi bana: " + match[1])
-          youtubeFeed.remove(match[1])
+          // youtubeFeed.remove(match[1])
         }) // hata sonu
         // new-item başlangıcı
         youtubeFeed.on("yt" + ytEvent + "yt", (item) => {
@@ -73,7 +73,7 @@ bot.onText(/\/site ekle (.+)/, (msg, match) => {
         siteFeed.on("error", () => {
           console.error()
           bot.sendMessage(msg.from.id, msg.from.first_name + "! sen bence şu URL'yi bi incele. Sanki bu Site Feed URL'si değil gibi geldi bana: " + match[1])
-          siteFeed.remove(match[1])
+          // siteFeed.remove(match[1])
         }) // hata sonu
         // new-item başlangıcı
         siteFeed.on("st" + stEvent + "st", (item) => {
