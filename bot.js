@@ -6,7 +6,7 @@ const rssEmitter = require("rss-feed-emitter");
 const bot = new tBot(process.env.BOTAPI, { polling: true })
 const siteFeed = new rssEmitter({ skipFirstLoad: true, userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36" }).setMaxListeners(0)
 const youtubeFeed = new rssEmitter({ skipFirstLoad: true, userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36" }).setMaxListeners(0);
-const db = mysql.createConnection(process.env.CLEARDB_DATABASE_URL:)
+const db = mysql.createConnection(process.env.CLEARDB_DATABASE_URL)
 db.connect((err) => {
   if (err) throw err;
   console.log("MySQL bağlantısı başarılı...")
@@ -48,7 +48,7 @@ bot.onText(/\/youtube ekle (.+)/, (msg, match) => {
 
         // Veri tabanına veri yazma başlıyor.
 
-        const saveYoutube = mysql.createConnection(process.env.CLEARDB_DATABASE_URL:)
+        const saveYoutube = mysql.createConnection(process.env.URLCLEARDB_DATABASE_URL)
         saveYoutube.connect()
         saveYoutube.query("INSERT INTO `feeds` (`chat_id`, `from_id`, `feed_type`, `feed_url`)        VALUES ('" + msg.chat.id + "', '" + msg.from.id + "', 1, '" + match[1] + "');", (err, rows, fields) => {
           if (err) throw err;
@@ -94,7 +94,7 @@ bot.onText(/\/site ekle (.+)/, (msg, match) => {
 
         // Veri tabanına veri yazma başlıyor.
 
-        const saveSite = mysql.createConnection(process.env.CLEARDB_DATABASE_URL:)
+        const saveSite = mysql.createConnection(process.env.URLCLEARDB_DATABASE_URL)
         saveSite.connect()
         saveSite.query("INSERT INTO `feeds` (`chat_id`, `from_id`, `feed_type`, `feed_url`)        VALUES ('" + msg.chat.id + "', '" + msg.from.id + "', 2, '" + match[1] + "');", (err, rows, fields) => {
           if (err) throw err;
@@ -129,7 +129,7 @@ bot.onText(/\/site kaldır (.+)/, (msg, match) => {
           bot.sendMessage(msg.from.id, msg.from.first_name + "! sen bence şu URL'yi bi incele. Sanki bu Site Feed URL'si değil gibi geldi bana.")
         }) // hata sonu
 
-        const removeSite = mysql.createConnection(process.env.CLEARDB_DATABASE_URL:)
+        const removeSite = mysql.createConnection(process.env.URLCLEARDB_DATABASE_URL)
         removeSite.connect()
         removeSite.query("DELETE FROM `feeds` WHERE ((`feed_url` = '" + match[1] + "'));", (err, rows, fields) => {
           if (err) throw err;
@@ -159,7 +159,7 @@ bot.onText(/\/youtube kaldır (.+)/, (msg, match) => {
           bot.sendMessage(msg.from.id, msg.from.first_name + "! sen bence şu URL'yi bi incele. Sanki bu Site Feed URL'si değil gibi geldi bana.")
         }) // hata sonu
 
-        const removeYoutube = mysql.createConnection(process.env.CLEARDB_DATABASE_URL:)
+        const removeYoutube = mysql.createConnection(process.env.URLCLEARDB_DATABASE_URL)
         removeYoutube.connect()
         removeYoutube.query("DELETE FROM `feeds` WHERE ((`feed_url` = '" + match[1] + "'));", (err, rows, fields) => {
           if (err) throw err;
