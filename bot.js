@@ -49,7 +49,7 @@ bot.onText(/\/youtube ekle (.+)/, (msg, match) => {
         // Veri tabanına veri yazma başlıyor.
 
         const saveYoutube = mysql.createConnection(process.env.CLEARDB_DATABASE_URL)
-        saveYoutube.connect()e
+        saveYoutube.connect()
         saveYoutube.query("INSERT INTO `feeds` (`chat_id`, `from_id`, `feed_type`, `feed_url`)        VALUES ('" + msg.chat.id + "', '" + msg.from.id + "', 1, '" + match[1] + "');", (err, rows, fields) => {
           if (err) throw err;
         })
