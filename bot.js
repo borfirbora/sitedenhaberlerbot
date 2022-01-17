@@ -48,8 +48,8 @@ bot.onText(/\/youtube ekle (.+)/, (msg, match) => {
 
         // Veri tabanına veri yazma başlıyor.
 
-        const saveYoutube = mysql.createConnection(process.env.URLCLEARDB_DATABASE_URL)
-        saveYoutube.connect()
+        const saveYoutube = mysql.createConnection(process.env.CLEARDB_DATABASE_URL)
+        saveYoutube.connect()e
         saveYoutube.query("INSERT INTO `feeds` (`chat_id`, `from_id`, `feed_type`, `feed_url`)        VALUES ('" + msg.chat.id + "', '" + msg.from.id + "', 1, '" + match[1] + "');", (err, rows, fields) => {
           if (err) throw err;
         })
@@ -94,7 +94,7 @@ bot.onText(/\/site ekle (.+)/, (msg, match) => {
 
         // Veri tabanına veri yazma başlıyor.
 
-        const saveSite = mysql.createConnection(process.env.URLCLEARDB_DATABASE_URL)
+        const saveSite = mysql.createConnection(process.env.CLEARDB_DATABASE_URL)
         saveSite.connect()
         saveSite.query("INSERT INTO `feeds` (`chat_id`, `from_id`, `feed_type`, `feed_url`)        VALUES ('" + msg.chat.id + "', '" + msg.from.id + "', 2, '" + match[1] + "');", (err, rows, fields) => {
           if (err) throw err;
@@ -129,7 +129,7 @@ bot.onText(/\/site kaldır (.+)/, (msg, match) => {
           bot.sendMessage(msg.from.id, msg.from.first_name + "! sen bence şu URL'yi bi incele. Sanki bu Site Feed URL'si değil gibi geldi bana.")
         }) // hata sonu
 
-        const removeSite = mysql.createConnection(process.env.URLCLEARDB_DATABASE_URL)
+        const removeSite = mysql.createConnection(process.env.CLEARDB_DATABASE_URL)
         removeSite.connect()
         removeSite.query("DELETE FROM `feeds` WHERE ((`feed_url` = '" + match[1] + "'));", (err, rows, fields) => {
           if (err) throw err;
@@ -159,7 +159,7 @@ bot.onText(/\/youtube kaldır (.+)/, (msg, match) => {
           bot.sendMessage(msg.from.id, msg.from.first_name + "! sen bence şu URL'yi bi incele. Sanki bu Site Feed URL'si değil gibi geldi bana.")
         }) // hata sonu
 
-        const removeYoutube = mysql.createConnection(process.env.URLCLEARDB_DATABASE_URL)
+        const removeYoutube = mysql.createConnection(process.env.CLEARDB_DATABASE_URL)
         removeYoutube.connect()
         removeYoutube.query("DELETE FROM `feeds` WHERE ((`feed_url` = '" + match[1] + "'));", (err, rows, fields) => {
           if (err) throw err;
