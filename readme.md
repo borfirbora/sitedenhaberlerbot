@@ -11,7 +11,9 @@ komutunu girerek projeyi indiriniz;
 3. Proje klasörüne giriniz ve `.env` dosyası oluşturunuz;
 4. `.env` dosyasının içine   
 `BOTAPI="bot_jetonunuz"`  
-şeklinde bir değişken oluşturunuz..;
+ve  
+`CLEARDB_DATABASE_URL:="mysql_connection_string"`
+şeklinde iki değişken oluşturunuz..;
 5. Ardından aşağıdaki komutları giriniz ve botunuzla etkileşimde bulununuz:
 
 ```
