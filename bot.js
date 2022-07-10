@@ -1,3 +1,4 @@
+// telegram botu
 require("dotenv").config();
 const mysql = require("mysql");
 const http = require("http")
