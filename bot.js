@@ -1,4 +1,5 @@
 // telegram botu
+// Bora FIRLANGEÇ
 require("dotenv").config();
 const mysql = require("mysql");
 const http = require("http")
